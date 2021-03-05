@@ -78,8 +78,7 @@ int take_bit(bigb *v, int pos)
 
 int bb_from_string(const char* str, bigb* v)
 {
-    int check;
-    if((check = (check_str(str))))
+    if((check_str(str)))
     {
         return BB_OK;
     }
@@ -126,7 +125,7 @@ char* bb_to_string(bigb* v)
 {
     if(v == NULL)
     {
-        return NULL;
+        return BB_NULL_ARG;
     }
 
     size_t len = size_bits(v);
@@ -134,7 +133,7 @@ char* bb_to_string(bigb* v)
     char* str =(char*)calloc(len,sizeof(char*));
     if(str == NULL)
     {
-        return NULL;
+        return BB_CANT_ALLOCATE;
     }
 
     for(int posSTR = 0; posSTR < len; posSTR++)
@@ -149,7 +148,7 @@ char* bb_to_string(bigb* v)
  {
      if(v == NULL)
      {
-         return BB_NULL_ARG;
+        return BB_NULL_ARG;
      }
 
      memset(v->parts, 0,LENGTH_OF_PARTS);
@@ -176,20 +175,24 @@ char* bb_to_string(bigb* v)
 
 int bb_disjunction(bigb* v1, bigb* v2, bigb* v){
 
-    if (v1 == NULL || v == NULL ||v2 == NULL){
+    if (v1 == NULL || v == NULL ||v2 == NULL)
+    {
         return BB_NULL_ARG;
     }
-    if(size_bits(v1) < size_bits(v2)){
+    if(size_bits(v1) < size_bits(v2))
+    {
         return bb_disjunction(v2, v1, v);
     }
     memset(v->parts, 0, LENGTH_OF_PARTS);
     v->last_byte= v1->last_byte;
     v->last_bit = v1->last_bit;
 
-    for(size_t part = 0; part < size_bits(v2); part++){
+    for(size_t part = 0; part < size_bits(v2); part++)
+    {
         v->parts[part] = v1->parts[part] | v2->parts[part];
     }
-    for(size_t bit = size_bits(v2); bit < size_bits(v1); bit++) {
+    for(size_t bit = size_bits(v2); bit < size_bits(v1); bit++) 
+    {
         v->parts[bit] = v1->parts[bit];
     }
 
@@ -337,22 +340,26 @@ int right_shift (bigb *vector, bigb *res, int len_shift)
 int left_shift (bigb *vector, bigb *res, int len_shift)
 {
     if (vector == NULL || res == NULL)
+    {
         return BB_NULL_ARG;
-
+    }
     if (abs(len_shift) > size_bits(vector))
+    {
         return vec_zero(res);
-
+    }
     if (len_shift < 0)
+    {
         return right_shift(vector, res, abs(len_shift));
-
+    }
 
     size_t  vector_res_len = size_bits(vector) - len_shift;
     res->last_byte = vector_res_len / 8;
     res->last_bit = vector_res_len % 8;
 
     for (size_t part = 0; part <= res->last_byte; part++)
+    {
         res->parts[part] = vector->parts[part];
-
+    }
     size_t bit_shift = 8 - res->last_bit;
     res->parts[res->last_byte] <<= bit_shift;
     res->parts[res->last_byte] >>= bit_shift;
@@ -363,22 +370,26 @@ int left_shift (bigb *vector, bigb *res, int len_shift)
 int left_cshift(bigb *vector, bigb *res, int len_shift)
 {
     if (vector == NULL || res == NULL)
+    {
         return BB_NULL_ARG;
-
+    }
     if (len_shift < 0)
+    {
         return right_cshift(vector, res, abs(len_shift));
-
+    }
     bigb *buf_vector = (bigb*)calloc(1, sizeof(bigb*));
     if (buf_vector == NULL)
+    {
         return BB_CANT_ALLOCATE;
-
+    }
     len_shift %= size_bits(vector);
     left_shift(vector, buf_vector, len_shift);
     right_shift(vector, res, (size_bits(vector) - len_shift));
 
     for (size_t part = 0; part <= buf_vector->last_byte; part++)
+    {
         res->parts[res->last_byte + part + 1] = buf_vector->parts[part];
-
+    }
     for (size_t part = res->last_byte; part <= (vector->last_byte + 1); part++)
     {
         uint8_t buf_part = res->parts[part + 1];
@@ -397,11 +408,13 @@ int left_cshift(bigb *vector, bigb *res, int len_shift)
 int right_cshift(bigb *vector, bigb *res, int len_shift)
 {
     if (vector == NULL || res == NULL)
+    {
         return BB_NULL_ARG;
-
+    }
     if (len_shift < 0)
+    {
         return left_cshift(vector, res, abs(len_shift));
-
+    }
     len_shift %=size_bits(vector);
     size_t rev_len_shift = size_bits(vector) - len_shift;
     return left_cshift(vector, res, rev_len_shift);
