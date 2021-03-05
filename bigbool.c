@@ -125,7 +125,7 @@ char* bb_to_string(bigb* v)
 {
     if(v == NULL)
     {
-        return BB_NULL_ARG;
+        return NULL;
     }
 
     size_t len = size_bits(v);
@@ -133,7 +133,7 @@ char* bb_to_string(bigb* v)
     char* str =(char*)calloc(len,sizeof(char*));
     if(str == NULL)
     {
-        return BB_CANT_ALLOCATE;
+        return NULL;
     }
 
     for(int posSTR = 0; posSTR < len; posSTR++)
