@@ -18,7 +18,7 @@
 
 struct bigbool
 {
-    uint8_t parts [LENGTH_OF_PARTS];//Количество символов
+    uint8_t parts [LENGTH_OF_PARTS];
     int last_bit;//биты
     int last_byte;//байты
 };
